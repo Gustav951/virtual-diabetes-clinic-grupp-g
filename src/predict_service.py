@@ -1,10 +1,10 @@
-from fastapi.exceptions import RequestValidationError
 import json
 import os
 from typing import Any, Dict, List
 
 import joblib
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ValidationError
 
@@ -38,7 +38,10 @@ model = load_model(MODEL_PATH)
 
 @app.exception_handler(ValidationError)
 async def validation_error_handler(request: Request, exc: ValidationError):
-    return JSONResponse(status_code=422, content={"error": "validation_error", "detail": json.loads(exc.json())})
+    return JSONResponse(
+        status_code=422, content={"error": "validation_error", "detail": json.loads(exc.json())}
+    )
+
 
 @app.exception_handler(RequestValidationError)
 async def request_validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -61,10 +64,20 @@ def health() -> Dict[str, Any]:
 @app.post("/predict")
 def predict(features: PatientFeatures) -> Dict[str, float]:
     try:
-        X: List[List[float]] = [[
-            features.age, features.sex, features.bmi, features.bp,
-            features.s1, features.s2, features.s3, features.s4, features.s5, features.s6
-        ]]
+        X: List[List[float]] = [
+            [
+                features.age,
+                features.sex,
+                features.bmi,
+                features.bp,
+                features.s1,
+                features.s2,
+                features.s3,
+                features.s4,
+                features.s5,
+                features.s6,
+            ]
+        ]
         prediction = float(model.predict(X)[0])
         return {"prediction": prediction}
     except Exception as e:
