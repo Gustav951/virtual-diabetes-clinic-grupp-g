@@ -35,14 +35,10 @@ def main() -> None:
     y = df["target"]
 
     # Hold-out split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Candidate models
-    ridge = Pipeline(
-        [("scaler", StandardScaler()), ("model", Ridge(alpha=1.0, random_state=42))]
-    )
+    ridge = Pipeline([("scaler", StandardScaler()), ("model", Ridge(alpha=1.0, random_state=42))])
     rf = Pipeline(
         [
             (
@@ -103,7 +99,6 @@ def main() -> None:
 
     with open("metrics.json", "w") as f:
         json.dump(metrics, f, indent=2)
-
 
     print(
         f"[v0.2] Saved model.joblib using {best_name} | RMSE={best_rmse:.4f} | "
