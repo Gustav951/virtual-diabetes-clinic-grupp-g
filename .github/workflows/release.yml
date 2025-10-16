@@ -39,17 +39,11 @@ jobs:
       - name: Train model (writes model.joblib + metrics.json)
         run: python src/train.py
 
-      - name: Show metrics.json
-        run: cat metrics.json
-
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image (bakes MODEL_VERSION from tag)
-        run: |
-          docker build \
-            --build-arg VERSION=${{ env.VERSION }} \
-            -t $IMAGE:${{ env.VERSION }} .
+        run: docker build --build-arg VERSION=${{ env.VERSION }} -t $IMAGE:${{ env.VERSION }} .
 
       - name: Smoke test container
         run: bash scripts/smoke.sh $IMAGE:${{ env.VERSION }}
@@ -73,3 +67,6 @@ jobs:
           body_path: RELEASE_NOTES.md
           files: |
             metrics.json
+          draft: false
+          prerelease: false
+          make_latest: true
