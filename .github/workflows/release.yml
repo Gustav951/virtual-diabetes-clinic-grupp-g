@@ -17,9 +17,11 @@ jobs:
       VERSION: ${{ github.ref_name }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -30,17 +32,24 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Train model
+      - name: Train model (writes model.joblib + metrics.json)
         run: python src/train.py
 
-      # ✅ Moved login BEFORE build and push
+      - name: Show metrics.json
+        run: cat metrics.json
+
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build Docker image
-        run: docker build --build-arg VERSION=${{ env.VERSION }} -t $IMAGE:${{ env.VERSION }} .
+      - name: Build Docker image (bakes MODEL_VERSION from tag)
+        run: |
+          docker build \
+            --build-arg VERSION=${{ env.VERSION }} \
+            -t $IMAGE:${{ env.VERSION }} .
 
       - name: Smoke test container
         run: bash scripts/smoke.sh $IMAGE:${{ env.VERSION }}
@@ -48,4 +57,19 @@ jobs:
       - name: Push Docker image
         run: docker push $IMAGE:${{ env.VERSION }}
 
-      - name: Extract
+      - name: Upload metrics as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics-${{ env.VERSION }}
+          path: metrics.json
+
+      - name: Extract release notes from CHANGELOG.md
+        run: bash scripts/extract_release_notes.sh ${{ env.VERSION }}
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          body_path: RELEASE_NOTES.md
+          files: |
+            metrics.json
