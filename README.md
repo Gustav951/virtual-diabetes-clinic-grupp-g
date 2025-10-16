@@ -18,20 +18,20 @@ Quick start (Docker — recommended)
 Pull a published image and run it (port 8000):
 
 # Baseline
-docker pull ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.1
-docker run --rm -p 8000:8000 ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.1
+"docker pull ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.1"
+"docker run --rm -p 8000:8000 ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.1"
 
 # Improved model
-docker pull ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.2
-docker run --rm -p 8000:8000 ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.2
+"docker pull ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.2"
+"docker run --rm -p 8000:8000 ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.2"
 
 Smoke test:
 
-curl http://localhost:8000/health
-# → {"status":"ok","model_version":"v0.x"}
+"curl http://localhost:8000/health"
+"→ {"status":"ok","model_version":"v0.x"}"
 
-curl -s -X POST http://localhost:8000/predict -H "Content-Type: application/json" -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
-# → {"prediction": <float>}
+"curl -s -X POST http://localhost:8000/predict -H "Content-Type: application/json" -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'"
+"→ {"prediction": <float>}"
 
 Open Swagger UI: http://localhost:8000/docs
 
@@ -69,23 +69,13 @@ Bad input (observability requirement):
 Run from source (local dev)
 -------------------------------------------------
 
-# 1) Create & activate venv (optional but recommended)
-python -m venv .venv
-# Windows (Git Bash)
-source .venv/Scripts/activate
-# macOS/Linux
-# source .venv/bin/activate
-
-# 2) Install dependencies
+# 1) Install dependencies
 pip install -r requirements.txt
 
-# 3) Train — writes model.joblib + metrics.json to repo root
+# 2) Train — writes model.joblib + metrics.json to repo root
 python src/train.py
 
-# 4) Run API
-# macOS/Linux:
-uvicorn src.predict_service:app --host 0.0.0.0 --port 8000
-# Windows-friendly:
+# 3) Run API
 python -m uvicorn src.predict_service:app --host 0.0.0.0 --port 8000
 
 -------------------------------------------------
