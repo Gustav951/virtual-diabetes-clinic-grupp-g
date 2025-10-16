@@ -18,24 +18,24 @@ Quick start (Docker — recommended)
 Pull a published image and run it (port 8000):
 
 # Baseline
-"docker pull ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.1"
-"docker run --rm -p 8000:8000 ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.1"
+```bash
+docker pull ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.1
+docker run --rm -p 8000:8000 ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.1
 
 # Improved model
-"docker pull ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.2"
-"docker run --rm -p 8000:8000 ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.2"
+```bash
+docker pull ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.2
+docker run --rm -p 8000:8000 ghcr.io/gustav951/virtual-diabetes-clinic-grupp-g:v0.2
 
-Smoke test:
+# Smoke test
+```bash
+curl http://localhost:8000/health
+→ {"status":"ok","model_version":"v0.x"}
 
-"curl http://localhost:8000/health"
-"→ {"status":"ok","model_version":"v0.x"}"
-
-"curl -s -X POST http://localhost:8000/predict -H "Content-Type: application/json" -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'"
+curl -s -X POST http://localhost:8000/predict -H "Content-Type: application/json" -d '{"age":0.02,"sex":-0.044,"bmi":0.06,"bp":-0.03,"s1":-0.02,"s2":0.03,"s3":-0.02,"s4":0.02,"s5":0.02,"s6":-0.001}'
 "→ {"prediction": <float>}"
 
 Open Swagger UI: http://localhost:8000/docs
-
-If port 8000 is busy, map a different host port, e.g. -p 8080:8000, then use http://localhost:8080.
 
 -------------------------------------------------
 Endpoints
